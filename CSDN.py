@@ -1,9 +1,6 @@
 # ====================================
 # --*-- coding: utf-8 --*--
 # @Time    : 2021-05-29
-# @Author  : TRHX • 鲍勃
-# @Blog    : www.itrhx.com
-# @CSDN    : itrhx.blog.csdn.net
 # @FileName: CSDN.py
 # @Software: PyCharm
 # ====================================
@@ -72,40 +69,35 @@ class CSDN:
     def csdn_sign_in(self) -> None:
         global TEXT, DESP
         response = requests.post(url=self.SIGN_IN_URL, headers=self.HEADERS, data=self.DATA)
-        result = json.loads(response.text)
-        # print(result)
+        result = response.json()
 
         if result['code'] == 200:
-            if not result['data']['isSigned'] and result['data']['signed']:
-                keep_count = result['data']['keepCount']
-                total_count = result['data']['totalCount']
-                total_signed_count = result['data']['totalSignedCount']
-                # self.STAR = result['data']['star']
-                self.DRAW_TIMES = result['data']['drawTimes']
-                TEXT = 'CSDN 签到成功！'
-                DESP = 'CSDN 签到成功！你已连续签到 {} 天，累计签到 {} 天，当前已有 {} 人签到。'.format(keep_count, total_count, total_signed_count)
-                print('签到成功！你已连续签到 {} 天，累计签到 {} 天，当前已有 {} 人签到。'.format(keep_count, total_count, total_signed_count))
-            elif result['data']['isSigned']:
+            data = result['data']
+            if data['isSigned']:
                 TEXT = 'CSDN 签到失败！'
                 DESP = 'CSDN 签到失败！你今天已经签到过了哟！'
-                print('你今天已经签到过了哟！')
+            elif data['signed']:
+                self.DRAW_TIMES = data['drawTimes']
+                TEXT = 'CSDN 签到成功！'
+                DESP = f"签到成功！你已连续签到 {data['keepCount']} 天，累计签到 {data['totalCount']} 天，当前已有 {data['totalSignedCount']} 人签到。\n"
+                    "{data['msg']}"
             else:
                 TEXT = 'CSDN 签到失败！'
+                DESP = ''
                 print('签到失败！')
         elif result['code'] == 400102:
             TEXT = 'CSDN 签到失败！'
             DESP = 'CSDN 签到失败！{} 用户不存在或者 cookie 错误！请检查 CSDN ID 或尝试重置 cookie！'.format(CSDN_ID)
-            print('签到失败！{} 用户不存在或者 cookie 错误！请检查 CSDN ID 或尝试重置 cookie！'.format(CSDN_ID))
         else:
             TEXT = 'CSDN 签到失败！'
-            print('签到失败！')
+            DESP = ''
+        print(TEXT, DESP)
 
     def csdn_luck_draw(self) -> None:
         if self.DRAW_TIMES != 0:
             global TEXT, DESP
             response = requests.post(url=self.LUCKY_DRAW_URL, headers=self.HEADERS, data=self.DATA)
-            result = json.loads(response.text)
-            print(result)
+            result = response.json()
 
             if result['code'] == 200:
                 if result['data']['can_draw']:
@@ -132,7 +124,8 @@ class CSDN:
 class Notice:
     @staticmethod
     def sever() -> None:
-        requests.get('https://sctapi.ftqq.com/{}.send?title={}&desp={}'.format(SEVER_SCKEY, TEXT, DESP))
+        r = requests.get(f'https://sctapi.ftqq.com/{SEVER_SCKEY}.send?title={TEXT}&desp={DESP}')
+        print(r.json())
 
     @staticmethod
     def wechat() -> None:
@@ -162,7 +155,8 @@ class Notice:
             },
             "msgtype": "text"
         }
-        requests.post(url=complete_url, data=json.dumps(data), headers=headers)
+        r = requests.post(url=complete_url, data=json.dumps(data), headers=headers)
+        print(r.json())
 
 
 def run() -> None:
