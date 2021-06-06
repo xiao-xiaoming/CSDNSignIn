@@ -79,8 +79,7 @@ class CSDN:
             elif data['signed']:
                 self.DRAW_TIMES = data['drawTimes']
                 TEXT = 'CSDN 签到成功！'
-                DESP = f"签到成功！你已连续签到 {data['keepCount']} 天，累计签到 {data['totalCount']} 天，当前已有 {data['totalSignedCount']} 人签到。\n"
-                    "{data['msg']}"
+                DESP = f"签到成功！你已连续签到 {data['keepCount']} 天，累计签到 {data['totalCount']} 天，当前已有 {data['totalSignedCount']} 人签到。\n{data['msg']}"
             else:
                 TEXT = 'CSDN 签到失败！'
                 DESP = ''
