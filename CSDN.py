@@ -132,7 +132,7 @@ class CSDN:
 class Notice:
     @staticmethod
     def sever() -> None:
-        requests.get('https://sc.ftqq.com/{}.send?text={}&desp={}'.format(SEVER_SCKEY, TEXT, DESP))
+        requests.get('https://sctapi.ftqq.com/{}.send?title={}&desp={}'.format(SEVER_SCKEY, TEXT, DESP))
 
     @staticmethod
     def wechat() -> None:
